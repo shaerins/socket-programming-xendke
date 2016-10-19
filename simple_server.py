@@ -8,7 +8,7 @@
 import sys
 import socket
 
-def openFile(filename):
+def openFile(filename): # function that will return the file(filename) in form of bytes object
     return open(filename, "rb").read()
 
 if __name__ == "__main__":
@@ -44,10 +44,10 @@ if __name__ == "__main__":
         data = ''
         data = conn.recv(1024)
         
-        if not data: break # if data received is empty break out of loop, should never break because we close connection later on
+        if not data: break # if data received is empty break out of loop, this should never break because we close connection later on
 
         data_string = str(data) # turn data to a string so we can more easily manipulate it
-        get_string = "" # this string is gonna hold the command which we assume to be a form of GET
+        get_string = "" # this string is gonna hold the command which we assume to be a form of a GET command
 
         for i in range(0, len(data_string)): # iterate through data_string and find first \r\n occurence 
             if(data_string[i:i+4] == "\\r\\n"):
@@ -57,13 +57,13 @@ if __name__ == "__main__":
 
         if(get_string[0:3] == "GET"): # if the command was a GET command then find filename
             filename = ""
-            for i in range(4, len(get_string)): # iterate through GET command and find first space
+            for i in range(4, len(get_string)): # iterate through GET command and find first space after "/"
                 if(get_string[i] == " "):
                     filename = get_string[5:i] # filename will be in the form "index.html" or "" in the case of "GET / HTTP.."
                     print(filename)
                     break
 
-            # send the file name filename and close connection
+            # send the file named filename and close connection
             if(not filename): # if filename empty, send index.html
                 conn.sendall(index_html)
                 conn.close()
@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 try:
                     conn.sendall(openFile(filename)) # try to open filename and send
                     conn.close()
-                except FileNotFoundError: # catch file not found error and send 404.html instead
+                except (FileNotFoundError, IsADirectoryError): # catch: file not found error or filename is dir, send 404.html instead
                     conn.sendall(four_oh_four)
                     conn.close()
             
