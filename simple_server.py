@@ -2,12 +2,20 @@ import sys
 import socket
 
 if __name__ == "__main__":
-    print("Hello World!")
+    print("Web Server Starting...")
+    if(len(sys.argv) > 2):
+        print("simple_server.py needs only one argument, port")
+        sys.exit(0)
+    elif(len(sys.argv) == 1):
+        print("simple_server.py needs an argument, port")
+        sys.exit(0)
 
+    port = eval(sys.argv[1])
+    
     # 1. Create a socket
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 2. "Bind" the socket to an IP and PORT
-    my_socket.bind(("localhost", 3001))
+    my_socket.bind(("localhost", port))
     # 3. Begin "listening" on the socket
     my_socket.listen(5)
     # 4. Begin "accepting" client connections
