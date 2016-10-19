@@ -1,29 +1,33 @@
 import sys
 import socket
 
+def openFile(filename):
+    return open(filename, "rb").read()
+
 if __name__ == "__main__":
-    print("Web Server Starting...")
     if(len(sys.argv) > 2):
-        print("simple_server.py needs only one argument, port")
+        print("simple_server.py supports only one argument: port")
         sys.exit(0)
     elif(len(sys.argv) == 1):
-        print("simple_server.py needs an argument, port")
-        sys.exit(0)
-
-    port = eval(sys.argv[1])
+        port = 3000
+    else:
+        try:
+            port = int(sys.argv[1])
+        except ValueError:
+            print(sys.argv[1], "is not a valid port number.")
+            sys.exit(0)
     
+    print("Web Server Starting...")
     # 1. Create a socket
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 2. "Bind" the socket to an IP and PORT
     my_socket.bind(("localhost", port))
+    print("Listening...")
     # 3. Begin "listening" on the socket
     my_socket.listen(5)
     # 4. Begin "accepting" client connections
     conn, addr = my_socket.accept()
-
-    def openFile(filename):
-        return open(filename, "rb").read()
-
+    
     index_html = open("index.html", "rb").read()
     four_oh_four = open("404.html", "rb").read()
 
