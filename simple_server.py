@@ -1,3 +1,6 @@
+# Team CORE4: JuanXGomez(Xendke), SharonLevin(shaerins), Luisa, Stephen
+# Python 3
+
 import sys
 import socket
 
@@ -25,39 +28,46 @@ if __name__ == "__main__":
     print("Listening...")
     # 3. Begin "listening" on the socket
     my_socket.listen(5)
-    # 4. Begin "accepting" client connections
-    conn, addr = my_socket.accept()
     
     index_html = open("index.html", "rb").read()
     four_oh_four = open("404.html", "rb").read()
 
-    # 5. Receive some data (up to 1024 bytes) FROM the client
-    data = ''
-    data = conn.recv(1024)
-    print(data)
+    
+    while(True):
+        # 4. Begin "accepting" client connections
+        conn, addr = my_socket.accept()
+        # 5. Receive some data (up to 1024 bytes) FROM the client
+        data = ''
+        data = conn.recv(1024)
+        
+        if not data: break
 
-    data_string = str(data)
-    get_string = ""
+        data_string = str(data)
+        get_string = ""
 
-    for i in range(0, len(data_string)):
-        if(data_string[i:i+4] == "\\r\\n"):
-            get_string = data_string[2:i]
-            print(get_string)
-            break
-
-    if(get_string[0:3] == "GET"):
-        filename = ""
-        for i in range(4, len(get_string)):
-            if(get_string[i] == " "):
-                filename = get_string[5:i]
-                print(filename)
+        for i in range(0, len(data_string)):
+            if(data_string[i:i+4] == "\\r\\n"):
+                get_string = data_string[2:i]
+                print(get_string)
                 break
 
-        if(not filename):
-            conn.sendall(index_html)
-        else:
-            try:
-                conn.sendall(openFile(filename))
-            except FileNotFoundError:
-                conn.sendall(four_oh_four)
+        if(get_string[0:3] == "GET"):
+            filename = ""
+            for i in range(4, len(get_string)):
+                if(get_string[i] == " "):
+                    filename = get_string[5:i]
+                    print(filename)
+                    break
+
+            if(not filename):
+                conn.sendall(index_html)
+                conn.close()
+            else:
+                try:
+                    conn.sendall(openFile(filename))
+                    conn.close()
+                except FileNotFoundError:
+                    conn.sendall(four_oh_four)
+                    conn.close()
+            
 	    
