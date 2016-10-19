@@ -9,7 +9,7 @@ import sys
 import socket
 
 def openFile(filename): # function that will return the file(filename) in form of bytes object
-    return open(filename, "rb").read()
+    return open("root/"+filename, "rb").read() # all files html files will be inside root/ file under project dir
 
 if __name__ == "__main__":
     if(len(sys.argv) > 2): # check if there are more than 2 arguments
