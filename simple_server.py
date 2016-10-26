@@ -44,7 +44,7 @@ if __name__ == "__main__":
         data = ''
         data = conn.recv(1024)
         
-        if not data: break # if data received is empty break out of loop, this should never break because we close connection later on
+        #if not data: break # if data received is empty break out of loop, this should never break because we close connection later on
 
         data_string = str(data) # turn data to a string so we can more easily manipulate it
         get_string = "" # this string is gonna hold the command which we assume to be a form of a GET command
@@ -72,6 +72,7 @@ if __name__ == "__main__":
                     conn.sendall(openFile(filename)) # try to open filename and send
                     conn.close()
                 except (FileNotFoundError, IsADirectoryError): # catch: file not found error or filename is dir, send 404.html instead
+                    print("404")
                     conn.sendall(four_oh_four)
                     conn.close()
             
