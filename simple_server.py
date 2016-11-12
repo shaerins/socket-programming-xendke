@@ -8,8 +8,11 @@
 import sys
 import socket
 
+root = "root/"
+
 def openFile(filename): # function that will return the file(filename) in form of bytes object
-    return open("root/"+filename, "rb").read() # all files html files will be inside root/ file under project dir
+    global root
+    return open(root + filename, "rb").read() # all files html files will be inside root/ file under project dir
 
 if __name__ == "__main__":
     if(len(sys.argv) > 2): # check if there are more than 2 arguments
@@ -28,13 +31,13 @@ if __name__ == "__main__":
     # 1. Create a socket
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 2. "Bind" the socket to an IP and PORT
-    my_socket.bind(("localhost", port))
+    my_socket.bind(("192.168.1.3", port))
     print("Listening...")
     # 3. Begin "listening" on the socket
     my_socket.listen(5)
     
-    index_html = openFile("index.html") # load index and 404 pages
-    four_oh_four = openFile("404.html")
+    #index_html = openFile("index.html") # load index and 404 pages
+    #four_oh_four = openFile("404.html")
 
     
     while(True): # keep accepting connections so that the server does not end after one "transaction"
@@ -47,6 +50,10 @@ if __name__ == "__main__":
         #if not data: break # if data received is empty break out of loop, this should never break because we close connection later on
 
         data_string = str(data) # turn data to a string so we can more easily manipulate it
+        print(data_string)
+        if "iPhone" in data_string or "Android" in data_string:
+            root = "root/mobile/"
+            
         get_string = "" # this string is gonna hold the command which we assume to be a form of a GET command
 
         for i in range(0, len(data_string)): # iterate through data_string and find first \r\n occurence 
@@ -65,7 +72,7 @@ if __name__ == "__main__":
 
             # send the file named filename and close connection
             if(not filename): # if filename empty, send index.html
-                conn.sendall(index_html)
+                conn.sendall(openFile("index.html"))
                 conn.close()
             else: # not empty
                 try:
@@ -73,7 +80,7 @@ if __name__ == "__main__":
                     conn.close()
                 except (FileNotFoundError, IsADirectoryError): # catch: file not found error or filename is dir, send 404.html instead
                     print("404")
-                    conn.sendall(four_oh_four)
+                    conn.sendall(openFile("404.html"))
                     conn.close()
             
 	    
