@@ -8,11 +8,11 @@
 import sys
 import socket
 
-root = "root/"
+root = "root/" # the root folder for where the available files to serve are stored
 
 def openFile(filename): # function that will return the file(filename) in form of bytes object
     global root
-    return open(root + filename, "rb").read() # all files html files will be inside root/ file under project dir
+    return open(root + filename, "rb").read() # we will manipulate the root variable to point to the right root folder according to who we are serving to (mobile vs desktop) 
 
 if __name__ == "__main__":
     if(len(sys.argv) > 2): # check if there are more than 2 arguments
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # 1. Create a socket
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 2. "Bind" the socket to an IP and PORT
-    my_socket.bind(("192.168.1.3", port))
+    my_socket.bind(("192.168.1.12", port))
     print("Listening...")
     # 3. Begin "listening" on the socket
     my_socket.listen(5)
@@ -51,9 +51,12 @@ if __name__ == "__main__":
 
         data_string = str(data) # turn data to a string so we can more easily manipulate it
         print(data_string)
-        if "iPhone" in data_string or "Android" in data_string:
-            root = "root/mobile/"
-            
+        
+        if "iPhone" in data_string or "Android" in data_string: # if data_string contains the strings "iPhone" or "Android" change root to mobile/ directory
+            root = "mobile/"
+        else:
+            root = "root/"
+
         get_string = "" # this string is gonna hold the command which we assume to be a form of a GET command
 
         for i in range(0, len(data_string)): # iterate through data_string and find first \r\n occurence 
