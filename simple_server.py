@@ -4,7 +4,6 @@
 #    https://www.tutorialspoint.com/python/python_networking.htm  
 #    https://docs.python.org/3/library/sys.html
 #    https://docs.python.org/3/library/socket.html
-
 import sys
 import socket
 
@@ -28,10 +27,14 @@ if __name__ == "__main__":
             sys.exit(0) # quit if port couldn't be casted to int
     
     print("Web Server Starting...")
+    # 0. Dynamically find IP for host
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('google.com', 0))
+    host_ip = s.getsockname()[0]
     # 1. Create a socket
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 2. "Bind" the socket to an IP and PORT
-    my_socket.bind(("192.168.1.12", port))
+    my_socket.bind((host_ip, port))
     print("Listening...")
     # 3. Begin "listening" on the socket
     my_socket.listen(5)
@@ -76,14 +79,12 @@ if __name__ == "__main__":
             # send the file named filename and close connection
             if(not filename): # if filename empty, send index.html
                 conn.sendall(openFile("index.html"))
-                conn.close()
             else: # not empty
                 try:
                     conn.sendall(openFile(filename)) # try to open filename and send
-                    conn.close()
                 except (FileNotFoundError, IsADirectoryError): # catch: file not found error or filename is dir, send 404.html instead
                     print("404")
                     conn.sendall(openFile("404.html"))
-                    conn.close()
             
+        conn.close()
 	    
